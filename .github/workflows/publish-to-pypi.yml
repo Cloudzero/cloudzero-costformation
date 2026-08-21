@@ -48,7 +48,16 @@ jobs:
             echo "Release tag '$TAG' does not match costformation.__version__ '$VERSION'."
             exit 1
           fi
-          git fetch --quiet origin main
+          git fetch --quiet --tags origin main
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            # Manual dispatch is a retry mechanism for an existing release,
+            # not a way to publish something new: the commit being built must
+            # already carry the release tag for its version.
+            if [ "$(git rev-list -n 1 "refs/tags/$VERSION" 2>/dev/null)" != "$(git rev-parse HEAD)" ]; then
+              echo "No release tag '$VERSION' points at this commit; create a GitHub Release instead."
+              exit 1
+            fi
+          fi
           if ! git merge-base --is-ancestor HEAD origin/main; then
             echo "The released commit is not on main; refusing to publish."
             exit 1
