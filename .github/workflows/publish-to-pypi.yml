@@ -63,7 +63,11 @@ jobs:
             exit 1
           fi
       - name: Build package
-        run: uv build
+        run: |
+          # Reproducible artifacts: clamp archive timestamps to the release
+          # commit so a rebuild from the tag produces the same bytes.
+          export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
+          uv build
       - name: Store the distribution packages
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
@@ -94,3 +98,8 @@ jobs:
 
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33  # v1.14.2
+        with:
+          # Make the workflow_dispatch retry path survive a partial publish:
+          # files whose exact (immutable) filename is already on PyPI are
+          # skipped instead of failing the run as duplicates.
+          skip-existing: true
