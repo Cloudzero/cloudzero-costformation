@@ -1,0 +1,184 @@
+[build-system]
+requires = [
+    # Exact pin: release retries must rebuild byte-identical artifacts for the
+    # publish workflow's provenance check, so the build backend cannot float.
+    # Dependabot bumps this like any other dependency.
+    "setuptools ==80.9.0",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloudzero-costformation"
+dynamic = ["version"]
+description = "A library for authoring and testing CloudZero CostFormation"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [
+    {name = "CloudZero, Inc."},
+]
+keywords = ["cloudzero", "costformation", "cfdl", "finops", "cloud-cost"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml",
+]
+
+[project.urls]
+Homepage = "https://www.cloudzero.com/"
+Repository = "https://github.com/Cloudzero/cloudzero-costformation"
+Documentation = "https://github.com/Cloudzero/cloudzero-costformation/tree/main/docs"
+Changelog = "https://github.com/Cloudzero/cloudzero-costformation/blob/main/CHANGELOG.md"
+Issues = "https://github.com/Cloudzero/cloudzero-costformation/issues"
+
+[dependency-groups]
+dev = [
+    {include-group = "lint"},
+    {include-group = "test"},
+]
+lint = [
+    "mypy",
+    "ruff",
+    "types-pyyaml",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-csv"
+]
+
+[tool.mypy]
+python_version = "3.10"
+plugins = []
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_unused_configs = true
+warn_redundant_casts = true
+disallow_subclassing_any = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+extra_checks = true
+disallow_any_generics = true
+# We'd like these to be true, but can't turn them on due to 3rd-party libraries
+# not having appropriate types
+disallow_untyped_calls = false
+disallow_untyped_decorators = false
+
+# Tests are allowed to be untyped — pytest functions and parametrize fixtures
+# don't benefit from strict annotation requirements.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module=[]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+doctest_optionflags = ["ELLIPSIS", "IGNORE_EXCEPTION_DETAIL"]
+addopts = [
+    "--doctest-modules",
+    "--cov=costformation",
+    "--cov-report=xml",
+    "--cov-report=html:coverage-reports/html",
+    "--cov-report=term-missing",
+    "--cov-branch",
+    "--cov-fail-under=90",
+    "--showlocals",
+    "-vvv",
+    "--csv=test-results/unittest-results.csv",
+    "--csv-columns=id,module,name,file,status,duration",
+    "--csv-delimiter=~"
+]
+markers = [
+    "unit",
+    "integration"
+]
+testpaths = [
+    "tests"
+]
+python_files = [
+    "test_*.py"
+]
+norecursedirs = [
+    "*_cache", ".venv", ".aws-sam", "test-results", "coverage-reports", ".vscode"
+]
+
+# Self-contained ruff configuration.
+[tool.ruff]
+include = ["costformation/**/*.py", "tests/**/*.py"]
+target-version = "py310"
+line-length = 128
+indent-width = 4
+
+[tool.ruff.lint]
+preview = true
+select = [
+    "A",
+    "C",
+    "COM818",
+    "CPY",
+    "E",
+    "ERA",
+    "F",
+    "I",
+    "PIE",
+    "R",
+    "RET",
+    "UP",
+    "W",
+]
+ignore = [
+    "E501",  # line-too-long — the formatter owns line width
+    "E731",  # lambda-expression-assignment
+    "UP007", # non-pep604-annotation — Optional[...] used for forward refs under TYPE_CHECKING
+]
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.ruff.lint.flake8-copyright]
+notice-rgx = '(?m)# SPDX-FileCopyrightText: Copyright \(c\) CloudZero, Inc\. or its affiliates\. All Rights Reserved\.\n# SPDX-License-Identifier: Apache-2\.0'
+
+[tool.ruff.format]
+indent-style = "space"
+quote-style = "single"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.setuptools.dynamic]
+version = {attr = "costformation.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["costformation*"]
+
+[tool.setuptools.package-data]
+costformation = ["py.typed"]
+
+[tool.uv]
+# Dependency-freshness policy: packages must be at least 7 days old (supply-chain buffer).
+# Emergency override: `uv lock --exclude-newer "0 days"` — document the reason in the PR.
+exclude-newer = "7 days"

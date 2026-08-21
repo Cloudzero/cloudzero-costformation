@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (c) CloudZero, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# macOS
+.DS_Store
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+/.python-version
+
+# Linting / type checking
+.mypy_cache/
+.ruff_cache/
+
+# Tests / coverage
+.coverage*
+.pytest_cache/
+.tox/
+.cache/
+coverage-reports/
+coverage.xml
+test-results/
+.hypothesis/
+
+# Editors / IDEs
+.idea/
+/.vscode/
+*.swp
+*.swo
+*.swn
+
+# Local environment
+/.env
+*.log

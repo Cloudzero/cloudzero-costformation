@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: Copyright (c) CloudZero, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Build and Test All Branches
+
+# Self-contained CI: runs on forks, no repository secrets required.
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: ci (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: uv sync
+      - name: Lint
+        run: make lint
+      - name: Test
+        run: make test
+
+  # Single aggregate check for branch protection: require this one context
+  # instead of one per matrix leg.
+  ci-summary:
+    name: ci-summary
+    needs: ci
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if any matrix leg failed
+        run: |
+          if [ "${{ needs.ci.result }}" != "success" ]; then
+            echo "ci result: ${{ needs.ci.result }}"
+            exit 1
+          fi

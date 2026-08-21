@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: Copyright (c) CloudZero, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bug report
+description: Report incorrect behavior, an error, or unexpected YAML output
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+      placeholder: Serializing a GroupDimension with ... produces ... instead of ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest Python snippet that reproduces the problem.
+      render: python
+      placeholder: |
+        from costformation import GroupDimension, GroupRule, Service, Equals
+
+        class Example(GroupDimension):
+            source = Service()
+            rules = [GroupRule(name='Compute', condition=Equals(['EC2']))]
+
+        print(Example().to_dict())
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen (e.g. the YAML/dict output you expected).
+    validations:
+      required: true
+
+  - type: input
+    id: package-version
+    attributes:
+      label: cloudzero-costformation version
+      placeholder: "e.g. 0.1.0 (pip show cloudzero-costformation)"
+    validations:
+      required: true
+
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "e.g. 3.12.4"
+    validations:
+      required: true

@@ -1,0 +1,113 @@
+# SPDX-FileCopyrightText: Copyright (c) CloudZero, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Check the Changelog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      diff_detected: ${{ steps.filter.outputs.diff_detected }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check if __init__.py changed
+        id: filter
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if git diff --name-only "origin/${BASE_REF}...HEAD" | grep -q "costformation/__init__.py"; then
+            echo "diff_detected=true" >> $GITHUB_OUTPUT
+            echo "📝 __init__.py was modified, changelog validation required"
+          else
+            echo "diff_detected=false" >> $GITHUB_OUTPUT
+            echo "✅ __init__.py not modified, skipping changelog validation"
+          fi
+
+  # Read __version__ and fail when a git tag for it already exists.
+  version-check:
+    needs: check-changes
+    if: needs.check-changes.outputs.diff_detected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Check version was bumped
+        run: |
+          VERSION=$(sed -n "s/^__version__ = '\(.*\)'$/\1/p" costformation/__init__.py)
+          if [ -z "$VERSION" ]; then
+            echo "Failed to read __version__ from costformation/__init__.py"
+            exit 1
+          fi
+          echo "Package version: $VERSION"
+          git fetch --tags --quiet
+          if git tag | grep -qx "$VERSION"; then
+            printf "\033[1;31mVersion %s already exists; you need to bump version.\n\033[0m" "$VERSION"
+            exit 1
+          fi
+
+  # When the version changes, CHANGELOG.md must contain a non-empty
+  # section for exactly that version.
+  validate-changelog:
+    needs: check-changes
+    if: needs.check-changes.outputs.diff_detected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Validate CHANGELOG.md has a non-empty section for the new version
+        run: |
+          VERSION=$(sed -n "s/^__version__ = '\(.*\)'$/\1/p" costformation/__init__.py)
+          if [ -z "$VERSION" ]; then
+            echo "Failed to read __version__ from costformation/__init__.py"
+            exit 1
+          fi
+          python3 - "$VERSION" <<'PYEOF'
+          import re
+          import sys
+
+          version = sys.argv[1]
+          text = open('CHANGELOG.md').read()
+          section = re.search(
+              rf'^## \[{re.escape(version)}\]\s*$(.*?)(?=^## \[|\Z)',
+              text, re.M | re.S,
+          )
+          if not section:
+              sys.exit(f"CHANGELOG.md has no '## [{version}]' section for the new version.")
+          if not re.search(r'^\s*-\s+\S', section.group(1), re.M):
+              sys.exit(f"CHANGELOG.md section '## [{version}]' has no entries.")
+          print(f"OK: '## [{version}]' present with entries.")
+          PYEOF
+
+  # This job always runs and succeeds, making it safe for branch protection
+  ready-to-publish:
+    runs-on: ubuntu-latest
+    needs: [check-changes, validate-changelog, version-check]
+    if: always()
+    steps:
+      - name: Determine status
+        run: |
+          if [[ "${{ needs.check-changes.outputs.diff_detected }}" == "false" ]]; then
+            echo "Ready to publish skipped (no __init__.py changes)"
+            exit 0
+          elif [[ "${{ needs.validate-changelog.result }}" == "success" && "${{ needs.version-check.result }}" == "success" ]]; then
+            echo "Ready to publish passed"
+            exit 0
+          elif [[ "${{ needs.validate-changelog.result }}" == "skipped" ]]; then
+            echo "Ready to publish skipped"
+            exit 0
+          else
+            echo "Ready to publish failed"
+            exit 1
+          fi

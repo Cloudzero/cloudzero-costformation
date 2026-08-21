@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: Copyright (c) CloudZero, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Cloudzero/cloudzero-costformation/blob/main/SECURITY.md
+    about: Please report security vulnerabilities privately per our security policy — not in a public issue.
+  - name: CostFormation (CFDL) documentation
+    url: https://docs.cloudzero.com/docs/costformation-definition-language-guide
+    about: Questions about the CostFormation Definition Language itself are covered in the official CloudZero docs.
