@@ -336,8 +336,11 @@ make check
 
 ### Publishing new versions of the package
 
-A new version of the package is automatically published to [PyPI](https://pypi.org/project/cloudzero-costformation/) (via the `publish-to-pypi.yml` workflow, using [Trusted Publishing](https://docs.pypi.org/trusted-publishers/)) for any merge to `main` that contains an update to `costformation/__init__.py`.
-Make sure to bump the version and update `CHANGELOG.md`!
+Publishing to [PyPI](https://pypi.org/project/cloudzero-costformation/) is done by the `publish-to-pypi.yml` workflow (using [Trusted Publishing](https://docs.pypi.org/trusted-publishers/)) whenever a GitHub Release is published:
+
+1. Open a PR that bumps `__version__` in `costformation/__init__.py` and adds a matching section to `CHANGELOG.md` (CI enforces both).
+2. Merge it, then create a GitHub Release from `main` with a tag matching the new version.
+3. The workflow builds the package with uv and publishes it to PyPI.
 
 ## License
 
