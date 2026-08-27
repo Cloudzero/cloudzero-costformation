@@ -7,6 +7,8 @@
 
 A Python library for defining CostFormation dimensions as classes and generating production-ready YAML output.
 
+📖 **Guide:** [Author CostFormation in Python](https://docs.cloudzero.com/docs/authoring-costformation-in-python) on docs.cloudzero.com.
+
 Full reference documentation for every class lives in [`docs/`](./docs/README.md).
 
 ## Features
@@ -266,6 +268,33 @@ test_data = {
 result = MyServices.evaluate(test_data)
 # Returns: 'Compute' (matches the Lambda rule)
 ```
+
+## Publishing to CloudZero
+
+`to_yaml()` produces CostFormation (CFDL) YAML — the same format you'd write by hand — which you then apply to your CloudZero account. First serialize your dimensions to a file:
+
+```python
+from costformation import CostFormation
+
+with open('my-costformation.yaml', 'w') as f:
+    f.write(CostFormation([MyServices()]).to_yaml())
+```
+
+Then publish it with any of:
+
+- **CloudZero API** (ideal for CI/CD) — `POST` the YAML with your CloudZero API key. Add `?validate_only=true` to check it without publishing:
+
+  ```bash
+  curl -X POST "https://api.cloudzero.com/v2/costformation/definition/versions" \
+    -H "Authorization: <YOUR_API_KEY>" \
+    -H "Content-Type: text/plain" \
+    --data-binary @my-costformation.yaml
+  ```
+
+- **CloudZero app** — paste the YAML into the CostFormation editor and publish.
+- **[CostFormation Toolkit for VS Code](https://docs.cloudzero.com/docs/vscode-extension)** — download the target namespace (this links the file to CloudZero), replace its contents with your generated YAML, then publish.
+
+For the full guide, see [Author CostFormation in Python](https://docs.cloudzero.com/docs/authoring-costformation-in-python) in the CloudZero docs.
 
 ## Development
 
