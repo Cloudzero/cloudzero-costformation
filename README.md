@@ -7,6 +7,8 @@
 
 A Python library for defining CostFormation dimensions as classes and generating production-ready YAML output.
 
+📖 **Guide:** [Author CostFormation in Python](https://docs.cloudzero.com/docs/authoring-costformation-in-python) on docs.cloudzero.com.
+
 Full reference documentation for every class lives in [`docs/`](./docs/README.md).
 
 ## Features
@@ -292,7 +294,7 @@ Then publish it with any of:
 - **CloudZero app** — paste the YAML into the CostFormation editor and publish.
 - **[CostFormation Toolkit for VS Code](https://docs.cloudzero.com/docs/vscode-extension)** — download the target namespace (this links the file to CloudZero), replace its contents with your generated YAML, then publish.
 
-For the full workflow, see [Allocate through YAML with CostFormation](https://docs.cloudzero.com/docs/allocate-through-yaml).
+For the full guide, see [Author CostFormation in Python](https://docs.cloudzero.com/docs/authoring-costformation-in-python) in the CloudZero docs.
 
 ## Development
 
