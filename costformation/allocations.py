@@ -20,7 +20,7 @@ from typing import Any
 
 # ``(str, Enum)`` is the pre-3.11 equivalent of ``StrEnum`` — each member is both
 # a ``str`` and an ``Enum``, and ``member.value`` returns the raw string. We use
-# this rather than ``enum.StrEnum`` so the library works on Python 3.10.
+# this rather than ``enum.StrEnum`` to keep ``str()``/``format()`` output stable for callers.
 
 
 class AllocationMethod(str, Enum):
