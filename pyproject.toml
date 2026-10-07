@@ -148,7 +148,6 @@ ignore = [
     "E501",  # line-too-long — the formatter owns line width
     "E731",  # lambda-expression-assignment
     "UP007", # non-pep604-annotation — Optional[...] used for forward refs under TYPE_CHECKING
-    "UP042", # replace-str-enum — StrEnum changes str()/format() output of public enums
 ]
 fixable = ["ALL"]
 unfixable = []

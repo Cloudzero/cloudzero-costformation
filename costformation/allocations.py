@@ -15,22 +15,18 @@ These types compose into the two allocation forms defined by CFDL:
 Both forms optionally take an ElementCutoff to bucket small elements.
 """
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
-# ``(str, Enum)`` is the pre-3.11 equivalent of ``StrEnum`` — each member is both
-# a ``str`` and an ``Enum``, and ``member.value`` returns the raw string. We use
-# this rather than ``enum.StrEnum`` to keep ``str()``/``format()`` output stable for callers.
 
-
-class AllocationMethod(str, Enum):
+class AllocationMethod(StrEnum):
     """Allocation method for AllocateByRules."""
 
     PROPORTIONAL = 'Proportional'
     EVEN = 'Even'
 
 
-class Granularity(str, Enum):
+class Granularity(StrEnum):
     """Granularity for ProportionalMethod."""
 
     USAGE_DAILY = 'UsageDaily'
@@ -38,7 +34,7 @@ class Granularity(str, Enum):
     USAGE_MONTHLY = 'UsageMonthly'
 
 
-class CostType(str, Enum):
+class CostType(StrEnum):
     """Cost type for ProportionalMethod."""
 
     BILLED = 'BilledCost'
