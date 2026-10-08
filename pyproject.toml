@@ -3,7 +3,7 @@ requires = [
     # Exact pin: release retries must rebuild byte-identical artifacts for the
     # publish workflow's provenance check, so the build backend cannot float.
     # Dependabot bumps this like any other dependency.
-    "setuptools ==80.9.0",
+    "setuptools==84.0.0",
 ]
 build-backend = "setuptools.build_meta"
 
