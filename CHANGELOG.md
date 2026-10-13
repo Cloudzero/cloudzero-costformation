@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0]
 
 ### Added
-- `description` on `GroupDimension` and `AllocationDimension`, emitted as YAML `Description:` and shown on hover in CloudZero (up to 300 characters).
+- `description` on `GroupDimension` and `AllocationDimension`, emitted as YAML `Description:` and shown on hover in CloudZero.
 
 ## [0.2.0]
 
