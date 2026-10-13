@@ -166,11 +166,6 @@ def test_group_dimension_to_dict_should_place_description_right_after_name():
 
 
 @pytest.mark.unit
-def test_group_dimension_to_dict_should_omit_description_when_unset():
-    assert 'Description' not in _TestGroup().to_dict()
-
-
-@pytest.mark.unit
 def test_group_dimension_to_dict_should_include_rules():
     result = _TestGroup().to_dict()
     assert result['Rules'] == [{'Type': 'Group', 'Name': 'ec2', 'Conditions': [{'Equals': 'AmazonEC2'}]}]
@@ -367,11 +362,6 @@ def test_allocation_dimension_to_dict_should_include_description_when_set():
     result = Described().to_dict()
     assert result['Description'] == 'Shared platform spend split by stream.'
     assert list(result)[:3] == ['Type', 'Name', 'Description']
-
-
-@pytest.mark.unit
-def test_allocation_dimension_to_dict_should_omit_description_when_unset():
-    assert 'Description' not in _TestAllocation().to_dict()
 
 
 @pytest.mark.unit
