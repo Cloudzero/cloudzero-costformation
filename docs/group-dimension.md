@@ -30,6 +30,7 @@ class Environment(GroupDimension):
 |-----------|------|---------|
 | `id` | `str \| None` | Optional explicit dimension ID. Defaults to the class name. Use this when the desired ID isn't a valid Python identifier (e.g. hyphenated like `cost-center`). |
 | `name` | `str \| None` | Optional display name emitted as YAML `Name:`. Defaults to the class name. |
+| `description` | `str \| None` | Optional text emitted as YAML `Description:`, shown when users hover over the dimension in CloudZero. Up to 300 characters. |
 | `source` | `Dimension \| list[Dimension] \| None` | Upstream source(s). If a list, the first is the primary source used for sourceless conditions; all are declared as dependencies. |
 | `transforms` | `list[Transform]` | Applied to the source value before rule evaluation. |
 | `rules` | `list[Rule]` | Any concrete `Rule` subclass (`GroupRule`, `GroupByRule`, `MetadataRule`); evaluated in order, first non-`None` result wins. |

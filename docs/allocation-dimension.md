@@ -194,6 +194,7 @@ BucketedAllocation:
 | Attribute | Type | Used by |
 |-----------|------|---------|
 | `name` | `str \| None` | All (optional display name) |
+| `description` | `str \| None` | All (optional hover text in CloudZero, up to 300 characters) |
 | `streams` | `list[str]` | `AllocateByStreams` |
 | `rate` | `FixedRate \| None` | `AllocateByStreams` |
 | `allocation_method` | `AllocationMethod \| ProportionalMethod \| None` | `AllocateByRules` (required) |
