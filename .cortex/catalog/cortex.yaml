@@ -1,0 +1,21 @@
+openapi: 3.0.1
+info:
+  title: Cloudzero Costformation
+  description: Author, test, and generate CloudZero CostFormation (CFDL) definitions in Python
+  x-cortex-git:
+    github:
+      alias: cortex
+      repository: Cloudzero/cloudzero-costformation
+  x-cortex-tag: library-cloudzero-costformation
+  x-cortex-type: library
+  x-cortex-slack:
+    channels:
+    - name: team-droptable-public
+  x-cortex-groups:
+  - platform
+  - library
+  x-cortex-owners:
+  - name: team-drop-table
+    type: GROUP
+    provider: CORTEX
+    description: ""
