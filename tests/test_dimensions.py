@@ -155,6 +155,17 @@ def test_group_dimension_to_dict_should_include_name_when_set():
 
 
 @pytest.mark.unit
+def test_group_dimension_to_dict_should_place_description_right_after_name():
+    class Described(dimensions.GroupDimension):
+        name = 'Environment'
+        description = 'Production vs. non-production spend.'
+        source = Service()
+        rules = []
+
+    assert list(Described().to_dict())[:2] == ['Name', 'Description']
+
+
+@pytest.mark.unit
 def test_group_dimension_to_dict_should_include_rules():
     result = _TestGroup().to_dict()
     assert result['Rules'] == [{'Type': 'Group', 'Name': 'ec2', 'Conditions': [{'Equals': 'AmazonEC2'}]}]
@@ -177,6 +188,7 @@ def test_group_dimension_to_dict_should_include_transforms_before_rules():
     'attr, value, key',
     [
         pytest.param('default_value', 'Other', 'DefaultValue', id='default-value'),
+        pytest.param('description', 'Production vs. non-production spend.', 'Description', id='description'),
         pytest.param('hide', True, 'Hide', id='hide'),
         pytest.param('disable', True, 'Disable', id='disable'),
     ],
@@ -338,6 +350,18 @@ def test_allocation_dimension_to_dict_should_include_name_when_set():
         streams = ['s1']
 
     assert Named().to_dict()['Name'] == 'Custom Name'
+
+
+@pytest.mark.unit
+def test_allocation_dimension_to_dict_should_include_description_when_set():
+    class Described(dimensions.AllocationDimension):
+        name = 'Shared Platform'
+        description = 'Shared platform spend split by stream.'
+        streams = ['s1']
+
+    result = Described().to_dict()
+    assert result['Description'] == 'Shared platform spend split by stream.'
+    assert list(result)[:3] == ['Type', 'Name', 'Description']
 
 
 @pytest.mark.unit

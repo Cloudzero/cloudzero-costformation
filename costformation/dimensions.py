@@ -59,6 +59,7 @@ class Dimension(ABC):
     """Base class for all dimensions"""
 
     name: str | None = None  # Optional display name (defaults to class name)
+    description: str | None = None
     hide: bool | None = None  # Whether to hide dimension from UI
     disable: bool | None = None  # Whether to disable dimension from processing
 
@@ -200,6 +201,9 @@ class GroupDimension(Dimension, _SourceInfoBlock):
         # Add Name only if explicitly set (not default to class name)
         if self.name is not None:
             result['Name'] = self.get_name()
+
+        if self.description is not None:
+            result['Description'] = self.description
 
         # Source / Sources / CoalesceSources / Transforms (from _SourceInfoBlock)
         result.update(self._source_info_dict())
@@ -438,6 +442,8 @@ class AllocationDimension(Dimension):
 
         if self.name is not None:
             result['Name'] = self.get_name()
+        if self.description is not None:
+            result['Description'] = self.description
         if self.hide is not None:
             result['Hide'] = self.hide
 
